@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  confluence:
+    image: atlassian/confluence-server:7.3
+    environment:
+      - ATL_JDBC_URL=jdbc:postgresql://confluencedb:5432/confluence
+      - ATL_JDBC_USER=confluence
+      - ATL_JDBC_PASSWORD=secret
+      - ATL_DB_DRIVER=org.postgresql.Driver
+      - ATL_DB_TYPE=postgresql
+    volumes:
+      - ./data:/opt/atlassian/confluence/data
+    ports:
+      - 8090:8090
+    depends_on:
+      - confluencedb
+    restart: always
+
+  confluencedb:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=confluence
+      - POSTGRES_DB=confluence
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    restart: always
+    entrypoint: ./docker-entrypoint.sh
